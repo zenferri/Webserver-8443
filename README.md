@@ -89,9 +89,9 @@ Retorne para
 No painel Cloudflare → Rules → Origin Rules crie uma regra:
 
 If Hostname equals **seu-dominio.com** → Override Origin Port = 8443.
-Isso instrui a Cloudflare a conectar sempre na 8443 da sua origem quando o cliente vier em 443. Resultado: https://singularys.net funcionará com sua atual borda Nginx na 8443.
+Isso instrui a Cloudflare a conectar sempre na 8443 da sua origem quando o cliente vier em 443. Resultado: https://seu-dominio.com funcionará com sua atual borda Nginx na 8443.
 
-## 2. Preparação e configuração do servidor UBUNTU
+# 2. Preparação e configuração do servidor UBUNTU
 
 Para este manual, utilizamos a distribuição **UBUNTU 24.04.3 LTS, codename: noble**. 
 
@@ -144,7 +144,7 @@ Estrutura de pastas esperada
 
 ---
 
-# 2. Emissão do certificado
+## 2.2 Emissão do certificado
 
 Você irá falhar se tentar emitir o certificado pelo modo tradicional, com desafio nas portas 80 e 443, pois o Let's Encrypt não consegue validar o HTTP.  
 
@@ -159,11 +159,11 @@ O bloqueio confirmado das portas **80** e **443** impossibilitava a emissão e a
 
 ---
 
-## 2.1. Solução Arquitetural: Proxy Cloudflare + Certificado DNS-01
+## 2.3. Solução Arquitetural: Proxy Cloudflare + Certificado DNS-01
 
 A saída adotada foi utilizar o **Cloudflare como proxy reverso público** (porta 443) e o **Certbot com o plugin DNS-01 via Cloudflare API**, o que permite validar o domínio diretamente via registros DNS, sem necessidade de abrir as portas 80 ou 443.
 
-### 3.1. Configuração do Certbot com DNS Cloudflare
+### 2.4. Configuração do Certbot com DNS Cloudflare
 
 **Lembre-se de adaptar os comandos e os códigos**. Substitua **seu-dominio.com** e **www.seu-dominio.com** com seus dados de domínio. 
 
