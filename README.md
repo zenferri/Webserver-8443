@@ -1,5 +1,22 @@
 # Projeto Infraestrutura Web Segura com bypass das portas 80 e 443 bloqueadas pelo provedor 
 
+# Índice
+
+- [Introdução](#introdução)
+  - [Firewall e Port Forwarding no seu roteador](#firewall-e-port-forwarding-no-seu-roteador)
+- [1 Configurando o Cloudflare](#1-configurando-o-cloudflare)
+  - [1.1 Configurando o redirecionamento de portas](#11-configurando-o-redirecionamento-de-portas)
+- [2 Preparação e configuração do servidor UBUNTU](#2-preparação-e-configuração-do-servidor-ubuntu)
+  - [2.1 Atualizar o sistema](#21-atualizar-o-sistema)
+  - [2.2 Instalar o NGINX, PHP-FPM e php-my-sql](#22-instalar-o-nginx-php-fpm-e-php-my-sql)
+  - [2.2 Emissão do certificado](#22-emissão-do-certificado)
+  - [2.3 Solução Arquitetural: Proxy Cloudflare + Certificado DNS-01](#23-solução-arquitetural-proxy-cloudflare--certificado-dns-01)
+  - [2.4 Configuração do Certbot com DNS Cloudflare](#24-configuração-do-certbot-com-dns-cloudflare)
+- [3 Criação da Arquitetura Proxy](#3-criação-da-arquitetura-proxy)
+  - [3.1 Backend (seu-dominio-backend)](#31-backend-seu-dominio-backend)
+- [4 Conclusão](#4-conclusão)
+- [Histórico de implantação](#histórico-de-implantação)
+
 # Introdução
 
 Este documento descreve, em detalhes, a implementação de uma infraestrutura web completa com bypass de uma restrição bastante comum: **bloqueio das portas 80 e 443 pelo provedor de internet**.  
@@ -295,7 +312,8 @@ O projeto demonstrou que é plenamente viável operar uma infraestrutura HTTPS c
 - Port forwarding e firewall configurados corretamente;
 - Certificados TLS otimizados e verificação SNI consistente.
 
-O resultado final é um ambiente **estável, seguro, validado e escalável**, permitindo hospedar múltiplos sites e aplicações web dentro do mesmo domínio, com o desempenho e a estética.
+O resultado final é um ambiente estável, seguro, validado e escalável, permitindo hospedar múltiplos sites e aplicações web dentro do mesmo domínio, com o desempenho e a estética.
+
 ---
 
 # Histórico de implantação
