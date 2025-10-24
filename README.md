@@ -19,3 +19,4 @@ O cenário inicial era o seguinte:
 **Certificados:** Let’s Encrypt (DNS-01)<br>
 **Versão 1.0:** 23/10/2025<br>
 
+
