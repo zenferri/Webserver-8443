@@ -11,3 +11,10 @@ O cenário inicial era o seguinte:
 - O provedor **bloqueava as portas 80 e 443**, impedindo o tráfego HTTP/HTTPS convencional.
 - Havia necessidade de servir o domínio `meu-dominio.com` e seus subdomínios por HTTPS válido.
 - O ambiente rodava em uma rede doméstica protegida por **roteador profissional**.
+
+**Autor:** José Augusto Zen Ferri — *Infraestrutura e Desenvolvimento Singularys*  
+**Servidor:** Ubuntu Server + Nginx
+**Domínio:** [https://singularys.net](https://singularys.net)
+**Proxy:** Cloudflare (modo Full Strict) 
+**Certificados:** Let’s Encrypt (DNS-01)
+**Versão 1.0:** 23/10/2025
