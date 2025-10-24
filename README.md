@@ -12,14 +12,10 @@ O cenário inicial era o seguinte:
 - Havia necessidade de servir o domínio `meu-dominio.com` e seus subdomínios por HTTPS válido.
 - O ambiente rodava em uma rede doméstica protegida por **roteador profissional**.
 
-**Autor:** José Augusto Zen Ferri — *Infraestrutura e Desenvolvimento Singularys*
+**Autor:** José Augusto Zen Ferri — *Infraestrutura e Desenvolvimento Singularys Cloud*<br> 
+**Servidor:** Ubuntu Server + Nginx <br>
+**Domínio:** [https://singularys.net](https://singularys.net)<br>
+**Proxy:** Cloudflare (modo Full Strict)<br>
+**Certificados:** Let’s Encrypt (DNS-01)<br>
+**Versão 1.0:** 23/10/2025<br>
 
-**Servidor:** Ubuntu Server + Nginx
-
-**Domínio:** [https://singularys.net](https://singularys.net)
-
-**Proxy:** Cloudflare (modo Full Strict) 
-
-**Certificados:** Let’s Encrypt (DNS-01)
-
-**Versão 1.0:** 23/10/2025
