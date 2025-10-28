@@ -221,8 +221,6 @@ sudo apt install -y certbot python3-certbot-dns-cloudflare
 ```
 Esses dois pacotes fazem o seguinte: 
 
-Esses dois pacotes fazem o seguinte:
-
 	•	certbot: o cliente principal para emissão e renovação de certificados Let’s Encrypt;
 	•	python3-certbot-dns-cloudflare: o plugin que permite ao Certbot autenticar via API da Cloudflare (modo DNS-01).
 
