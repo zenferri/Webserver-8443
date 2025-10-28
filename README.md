@@ -337,8 +337,8 @@ server {
     server_name seu-dominio.com www.seu-dominio.com;
 
     # Cert público (LE via DNS-01)
-    ssl_certificate     /etc/letsencrypt/live/singularys.net/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/singularys.net/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/seu-dominio.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/seu-dominio.com/privkey.pem;
 
     # TLS
     ssl_session_timeout 1d;
