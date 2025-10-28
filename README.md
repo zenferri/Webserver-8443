@@ -213,6 +213,58 @@ O bloqueio das portas **80** e **443** pelo provedor impossibilita a emissão e 
 
 A saída adotada foi utilizar o **Cloudflare como proxy reverso público** (porta 443) e o **Certbot com o plugin DNS-01 via Cloudflare API**, o que permite validar o domínio diretamente via registros DNS, sem necessidade de abrir as portas 80 ou 443.
 
+Para isso, precisamos instalar o Certbot e o plugin do Cloudflare.
+
+```bash
+sudo apt update
+sudo apt install -y certbot python3-certbot-dns-cloudflare
+```
+Esses dois pacotes fazem o seguinte: 
+
+Esses dois pacotes fazem o seguinte:
+
+	•	certbot: o cliente principal para emissão e renovação de certificados Let’s Encrypt;
+	•	python3-certbot-dns-cloudflare: o plugin que permite ao Certbot autenticar via API da Cloudflare (modo DNS-01).
+
+Para verificar se o plugin foi reconhecido, execute: 
+
+```bash
+certbot plugins
+```
+
+A resposta esperada deverá ser: 
+
+```
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+* dns-cloudflare
+Description: Obtain certificates using a DNS TXT record (if you are using
+Cloudflare for DNS).
+Interfaces: Authenticator, Plugin
+Entry point: EntryPoint(name='dns-cloudflare',
+value='certbot_dns_cloudflare._internal.dns_cloudflare:Authenticator',
+group='certbot.plugins')
+
+* standalone
+Description: Runs an HTTP server locally which serves the necessary validation
+files under the /.well-known/acme-challenge/ request path. Suitable if there is
+no HTTP server already running. HTTP challenge only (wildcards not supported).
+Interfaces: Authenticator, Plugin
+Entry point: EntryPoint(name='standalone',
+value='certbot._internal.plugins.standalone:Authenticator',
+group='certbot.plugins')
+
+* webroot
+Description: Saves the necessary validation files to a
+.well-known/acme-challenge/ directory within the nominated webroot path. A
+seperate HTTP server must be running and serving files from the webroot path.
+HTTP challenge only (wildcards not supported).
+Interfaces: Authenticator, Plugin
+Entry point: EntryPoint(name='webroot',
+value='certbot._internal.plugins.webroot:Authenticator',
+group='certbot.plugins')
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+```
+
 ### 2.4. Configuração do Certbot com DNS Cloudflare
 
 **Lembre-se de adaptar os comandos e os códigos**. Substitua **seu-dominio.com** e **www.seu-dominio.com** com seus dados de domínio. 
@@ -239,7 +291,7 @@ sudo chmod 600 /etc/letsencrypt/cloudflare.ini
 Geração do certificado (modo DNS-01):
 
 ```bash
-sudo certbot certonly   --dns-cloudflare   --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini   -d seu-dominio.com -d www.seu-dominio.com
+sudo certbot certonly   --dns-cloudflare   --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini --dns-cloudflare-propagation-seconds 30  -d seu-dominio.com -d www.seu-dominio.com
 ```
 
 Resultado esperado:
@@ -250,6 +302,19 @@ Certificate is saved at: /etc/letsencrypt/live/singularys.net/fullchain.pem
 Key is saved at:         /etc/letsencrypt/live/singularys.net/privkey.pem
 ```
 
+**ATENÇÃO:** O Certbot e o plugin do Cloudflare tem um tempo padrão de espera de 10 segundos, o que pode ocasionar erros de criação do certiciado. Por isso incluimos uma flag aumentando o tempo para 30 segundos. 
+Caso o erro persista, aumente o tempo para 60s na flag **--dns-cloudflare-propagation-seconds 30** no comando acima. 
+
+Se mesmo assim o erro persistir, cheque as configurações no cloudflare, incluindo tokens e registros de dominio. 
+
+Para o dominio seu-dominio.com e www.seu-dominio.com , verifique no painel de controle do DNS na cloudflare o seguinte: 
+
+| Type  |  Name  | Content  | Proxy Status  | TTL |
+|_______|________|__________|_______________|_____|
+| A | seu-dominio.com | ip_do_webserver | Proxied | Auto |
+| CNAME| www | seu-dominio.com | Proxied | Auto |
+
+Se estiver tudo certo, confira o token gerado no seu profile. 
 ---
 
 # 3. Criação da Arquitetura Proxy
