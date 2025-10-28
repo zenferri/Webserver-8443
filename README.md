@@ -140,23 +140,56 @@ Depois, para iniciar:
 sudo systemctl enable --now php8.3-fpm
 ````
 
-No Nginx, configure o caminho do socket correto:
-
-```bash
-fastcgi_pass unix:/run/php/php8.3-fpm.sock;
-````
-
 Verifique se o PHP está ativo: 
 
 ```bash
-systemctl status php*-fpm
+systemctl status php8.3-fpm
 ````
-Estrutura de pastas esperada
+
+A resposta esperada será algo como 
+
+```bash
+● php8.3-fpm.service - The PHP 8.3 FastCGI Process Manager
+     Loaded: loaded (/usr/lib/systemd/system/php8.3-fpm.service; enabled; preset: enabled)
+     Active: active (running) since Tue 2025-10-28 19:05:37 UTC; 15min ago
+       Docs: man:php-fpm8.3(8)
+   Main PID: 15519 (php-fpm8.3)
+     Status: "Processes active: 0, idle: 2, Requests: 0, slow: 0, Traffic: 0req/sec"
+      Tasks: 3 (limit: 9408)
+     Memory: 8.0M (peak: 8.8M)
+        CPU: 63ms
+     CGroup: /system.slice/php8.3-fpm.service
+             ├─15519 "php-fpm: master process (/etc/php/8.3/fpm/php-fpm.conf)"
+             ├─15521 "php-fpm: pool www"
+             └─15522 "php-fpm: pool www"
+
+Oct 28 19:05:37 webxdsm systemd[1]: Starting php8.3-fpm.service - The PHP 8.3 FastCGI Process Manager...
+Oct 28 19:05:37 webxdsm systemd[1]: Started php8.3-fpm.service - The PHP 8.3 FastCGI Process Manager.
+```
+
+Interpretação por linhas: 
 
 ```
-/var/www/seu-dominio        ← site principal (backend)
-/etc/nginx/sites-available  ← arquivos de configuração
-/etc/nginx/sites-enabled    ← links simbólicos ativos
+	•	Loaded: loaded (...) enabled → o serviço está configurado para iniciar automaticamente.
+	•	Active: active (running) → o PHP-FPM está ativo e pronto para aceitar conexões.
+	•	Main PID → identifica o processo principal do PHP-FPM.
+	•	Status: → mostra o número de processos em uso (idle e ativos).
+	•	CGroup: → lista o processo mestre e os “workers” do pool www.
+```
+
+Se você recebeu alguma mensagem de erro, ou algo como **inactive (dead)** ou **failed**, o serviço não iniciou corretamente. Refaça os paços conferindo a versão do seu PHP.
+
+Para conferir a versão: 
+
+```bash
+ls /run/php/
+```
+
+Você verá algo como: 
+
+```
+php8.3-fpm.sock
+php8.3-fpm.pid
 ```
 
 ---
@@ -172,7 +205,7 @@ Timeout during connect (likely firewall problem)
 DNS problem: looking up A for www.seu-dominio.com
 ```
 
-O bloqueio confirmado das portas **80** e **443** impossibilitava a emissão e a renovação de certificados pelo método padrão `HTTP-01`.
+O bloqueio das portas **80** e **443** pelo provedor impossibilita a emissão e a renovação de certificados pelo método padrão `HTTP-01`.
 
 ---
 
