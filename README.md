@@ -307,10 +307,10 @@ Se mesmo assim o erro persistir, cheque as configurações no cloudflare, inclui
 
 Para o dominio seu-dominio.com e www.seu-dominio.com , verifique no painel de controle do DNS na cloudflare o seguinte: 
 
-| Type  |  Name  | Content  | Proxy Status  | TTL |
-|_______|________|__________|_______________|_____|
-| A | seu-dominio.com | ip_do_webserver | Proxied | Auto |
-| CNAME| www | seu-dominio.com | Proxied | Auto |
+| Type  |     Name     |     Content     | Proxy Status |  TTL  |
+|:------|:-------------:|:---------------:|:-------------:|:-----:|
+| A     | seu-dominio.com | ip_do_webserver | Proxied | Auto |
+| CNAME | www | seu-dominio.com | Proxied | Auto |
 
 Se estiver tudo certo, confira o token gerado no seu profile. 
 ---
