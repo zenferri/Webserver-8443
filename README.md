@@ -326,6 +326,16 @@ O Nginx atua agora com **dois papéis**:
 
 **ATENÇÃO!** Lembre-se de adaptar os comandos e os códigos. Substitua **seu-dominio.com** e **www.seu-dominio.com** com seus dados de domínio. 
 
+O passo a seguir é apenas um excesso de cautela para garantir que o correto funcionamento do boundle de CAs do sistema.
+
+```bash
+sudo apt update
+sudo apt install -y ca-certificates
+sudo update-ca-certificates
+```
+
+Em seguida, execute: 
+
 ```bash
 sudo nano /etc/nginx/sites-available/seu-dominio
 ````
@@ -369,13 +379,15 @@ server {
         proxy_ssl_name $host;      # SNI = host solicitado
         proxy_ssl_verify on;       # verifica o cert do backend
         proxy_ssl_verify_depth 3;
+        proxy_ssl_trusted_certificate /etc/ssl/certs/ca-certificates.crt; 
+        proxy_ssl_session_reuse on;
     }
 }
 
 # Opcional: 8880 só para testes locais → redireciona para HTTPS na 8443
 server {
     listen 8880;
-    server_name seu-dominio.com www.seu-dominio.com;;
+    server_name seu-dominio.com www.seu-dominio.com;
     return 301 https://$host:8443$request_uri;
 }
 ```
@@ -387,15 +399,92 @@ sudo ln -s /etc/nginx/sites-available/seu-dominio /etc/nginx/sites-enabled/seu-d
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 ````
+Retorno esperado: 
 
-No Cloudflare, mantenha o DNS com proxy ativado (laranja) e SSL. Garanta que a 8443 esteja liberada na WAN e no firewall do host. Para testar sem depender do DNS, use:
+```
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
 
-Liberando as portas no firewall do ubuntu, caso ainda não tenha feito:
+### 3.2 Criando o backend para o loopback
+
+Agora vamos configurar o backend HTTPS interno para responder a requisição externa. 
+
+Execute: 
 
 ```bash
-sudo ufw allow 8443/tcp
+sudo nano /etc/nginx/sites-available/seu-dominio-backend
+```
+
+Cole esse modelo, ajustando paths e dominios: 
+
+```bash
+# Backend local: serve o site em 127.0.0.1:443
+server {
+    listen 127.0.0.1:443 ssl http2;
+    server_name seu-dominio.com;
+
+    # certificados LE do domínio dsmjau
+    ssl_certificate     /etc/letsencrypt/live/seu-dominio.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/seu-dominio.com/privkey.pem;
+
+    ssl_session_timeout 1d;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+
+    root /var/www/seu-dominio;         # ajuste se usar outro diretório
+    index index.php index.html;
+
+    # Boa prática para estáticos (opcional)
+    location ~* \.(ico|css|js|gif|jpe?g|png|svg|webp|woff2?)$ {
+        expires 30d;
+        add_header Cache-Control "public";
+        try_files $uri =404;
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # PHP-FPM (ajuste a versão do socket)
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+    }
+}
+```
+Agora basta habilitar e recarregar: 
+
+```bash
+sudo mkdir -p /var/www/seu-dominio
+sudo ln -s /etc/nginx/sites-available/seu-dominio-backend /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Resultado esperado: 
+
+```bash
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
 ````
 
+Para testar, execute: 
+
+```bash
+curl -vk https://127.0.0.1:443/ --resolve seu-dominio.com:443:127.0.0.1 -H 'Host: seu-dominio.com'
+```
+
+Procure pela linha abaixo entre todas as informações que aparecerem. 
+
+```
+HTTP/2 200 com o conteúdo do site.
+```
+Caso não tenha colocado nenhum site dentrdo do diretório, receberá: 
+
+```
+HTTP/2 403
+````
+Se tudo estiver correto, você já consegue acessar seu site pelo navegador! 
 ---
 
 # 4. Conclusão
@@ -430,6 +519,6 @@ O resultado final é um ambiente estável, seguro, validado e escalável, permit
 **Domínio:** [https://singularys.net](https://singularys.net)<br>
 **Proxy:** Cloudflare (modo Full Strict)<br>
 **Certificados:** Let’s Encrypt (DNS-01)<br>
-**Versão 1.0:** 23/10/2025<br>
+**Versão 1.1:** 27/10/2025<br>
 
 
