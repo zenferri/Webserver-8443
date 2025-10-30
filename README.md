@@ -484,7 +484,9 @@ Caso não tenha colocado nenhum site dentrdo do diretório, receberá:
 ```
 HTTP/2 403
 ````
+
 Se tudo estiver correto, você já consegue acessar seu site pelo navegador! 
+
 ---
 
 # 4. Conclusão
